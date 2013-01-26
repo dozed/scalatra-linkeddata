@@ -10,6 +10,8 @@ trait LinkedDataSupport extends ApiFormats {
 
   org.openjena.riot.RIOT.init()
   formats("turtle") = "text/turtle"
+  formats("rdfxml") = "application/rdf+xml"
+
   mimeTypes("text/turtle") = "turtle"
   mimeTypes("application/rdf+xml") = "rdfxml"
 
@@ -20,7 +22,7 @@ trait LinkedDataSupport extends ApiFormats {
 
   override def renderPipeline = ({
     case stmts: StmtIterator =>
-      val (wf, ct) = jenaWriterFormats.getOrElse(format, ("RDF/XML", "application/xml"))
+      val (wf, ct) = jenaWriterFormats.getOrElse(format, ("RDF/XML", "application/rdf+xml"))
       contentType = ct
 
       val m = ModelFactory.createDefaultModel
