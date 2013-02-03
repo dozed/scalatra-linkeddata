@@ -50,8 +50,8 @@ trait LinkedDataSupport extends ApiFormats {
       case r:Literal => r.getString
     }
 
-    def ctx = {
-      stl.groupBy(s => (s.getPredicate, s.getObject.isResource)).keys.map({
+    def ctx(l: Iterable[Statement]) = {
+      l.groupBy(s => (s.getPredicate, s.getObject.isResource)).keys.map({
         case (p, true) =>
             """"%s": { "@id": "%s", "@type": "@id" }""".format(p.getLocalName, p)
         case (p, false) =>
@@ -59,10 +59,9 @@ trait LinkedDataSupport extends ApiFormats {
       })
     }
 
-
     stl.groupBy(_.getSubject) foreach { case (_, l) =>
       w.print("{\n")
-      w.print(""""@context": { %s },""".format(ctx.mkString(",\n")))
+      w.print(""""@context": { %s },""".format(ctx(l).mkString(",\n")))
       l.map { s =>
         "\"" + s.getPredicate.getLocalName + "\": \"" + obj(s.getObject) + "\""
       }.mkString(",\n").foreach(w.print)
