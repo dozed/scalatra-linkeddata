@@ -43,17 +43,29 @@ trait LinkedDataSupport extends ApiFormats {
     // contentType = "application/ld+json"
     contentType = "application/json"
     val w = response.getWriter
+    val stl = stmts.toList
 
     def obj(r: RDFNode) = r match {
       case r:Resource => r
       case r:Literal => r.getString
     }
 
-    stmts.toList.groupBy(_.getSubject) foreach { case (_, l) =>
+    def ctx = {
+      stl.groupBy(s => (s.getPredicate, s.getObject.isResource)).keys.map({
+        case (p, true) =>
+            """"%s": { "@id": "%s", "@type": "@id" }""".format(p.getLocalName, p)
+        case (p, false) =>
+            """"%s": "%s" """.format(p.getLocalName, p)
+      })
+    }
+
+
+    stl.groupBy(_.getSubject) foreach { case (_, l) =>
       w.print("{\n")
+      w.print(""""@context": { %s },""".format(ctx.mkString(",\n")))
       l.map { s =>
         "\"" + s.getPredicate.getLocalName + "\": \"" + obj(s.getObject) + "\""
-      }.mkString(",").foreach(w.print)
+      }.mkString(",\n").foreach(w.print)
       w.print("}\n")
     }
   }
