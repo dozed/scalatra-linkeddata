@@ -11,7 +11,7 @@ $ ./sbt
 
 ## Supported formats
 
-Supported formats are currently: Turtle, RDF/XML JSON and JSON-LD
+Supported formats are currently: Turtle, RDF/XML, RDF/JSON and JSON-LD
 
 Via content negotiation:
 
