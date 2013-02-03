@@ -27,7 +27,7 @@ Or via formats query parameter:
 ```sh
 curl http://localhost:8080/Germany\?format\=turtle
 curl http://localhost:8080/Germany\?format\=rdfxml
-curl http://localhost:8080/Germany\?format\=rdf+json
+curl http://localhost:8080/Germany\?format\=rdf%2Bjson
 curl http://localhost:8080/Germany\?format\=ld%2Bjson
 ```
 
