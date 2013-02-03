@@ -27,7 +27,7 @@ trait LinkedDataSupport extends ApiFormats {
   override def renderPipeline = ({
     case stmts: StmtIterator =>
 
-      if (true || format == "ld+json") {
+      if (format == "ld+json") {
         writeJsonLd(stmts)
       } else {
         val (wf, ct) = jenaWriterFormats.getOrElse(format, ("RDF/XML", "application/rdf+xml"))
@@ -56,8 +56,6 @@ trait LinkedDataSupport extends ApiFormats {
       }.mkString(",").foreach(w.print)
       w.print("}\n")
     }
-
-
   }
 
 }
