@@ -14,14 +14,16 @@ trait LinkedDataSupport extends ApiFormats {
   formats("turtle") = "text/turtle"
   formats("rdfxml") = "application/rdf+xml"
   formats("ld+json") = "application/ld+json"
+  formats("rdf+json") = "application/rdf+json"
 
   mimeTypes("text/turtle") = "turtle"
   mimeTypes("application/rdf+xml") = "rdfxml"
   mimeTypes("application/ld+json") = "ld+json"
+  mimeTypes("application/rdf+json") = "rdf+json"
 
   val jenaWriterFormats = Map(
     "turtle" -> ("TURTLE", "text/turtle"),
-    "json" -> ("RDF/JSON", "application/json"),
+    "rdf+json" -> ("RDF/JSON", "application/json"),  // "application/rdf+json"
     "xml" -> ("RDF/XML", "application/rdf+xml"))
 
   override def renderPipeline = ({
