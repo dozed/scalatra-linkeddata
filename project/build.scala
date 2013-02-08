@@ -6,7 +6,7 @@ object ScalatralinkeddataBuild extends Build {
   val Name = "scalatra-linkeddata"
   val Version = "0.1.0-SNAPSHOT"
   val ScalaVersion = "2.10.0"
-  val ScalatraVersion = "2.2.0-SNAPSHOT"
+  val ScalatraVersion = "2.2.0"
 
   import java.net.URL
   import com.github.siasia.PluginKeys.port
@@ -30,6 +30,8 @@ object ScalatralinkeddataBuild extends Build {
           "org.scalatra" % "scalatra" % ScalatraVersion cross scalatraCV,
           "org.scalatra" % "scalatra-scalate" % ScalatraVersion cross scalatraCV,
           "org.scalatra" % "scalatra-specs2" % ScalatraVersion % "test" cross scalatraCV,
+          "org.scalatra" %% "scalatra-json" % "2.2.0",
+          "org.json4s"   %% "json4s-jackson" % "3.1.0",
           "org.apache.jena" % "jena-core" % "2.7.4",
           "org.apache.jena" % "jena-arq" % "2.9.4",
           "ch.qos.logback" % "logback-classic" % "1.0.6" % "runtime",

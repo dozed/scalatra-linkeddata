@@ -5,6 +5,8 @@ import scalate.ScalateSupport
 import scala.collection.JavaConversions._
 
 import com.hp.hpl.jena.rdf.model._
+import com.hp.hpl.jena.query._
+
 import java.io._
 
 class ScalatraLinkedData extends ScalatraServlet with ScalateSupport with LinkedDataSupport {
@@ -18,11 +20,24 @@ class ScalatraLinkedData extends ScalatraServlet with ScalateSupport with Linked
   val rdfType = model.getProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")
   val selfGoverning = model.getResource(faoUrl("self_governing"))
 
-  get("/:id") {
+  get("/country/:id") {
     val url = faoUrl(params("id"))
     val res = model.getResource(url)
     val stmts = model.listStatements(res, null, null)
     stmts
+  }
+
+  post("/sparql", format == "sparql-query") {
+    val queryString: String = sparqlQueryString
+    println(queryString)
+
+    val querySolutions: List[QuerySolution] = doSparqlQuery
+    querySolutions foreach { soln =>
+      println(soln)
+      // val x = soln.get("varName")
+      // val r = soln.getResource("VarR")
+      // val l = soln.getLiteral("VarL")
+    }
   }
 
   notFound {
