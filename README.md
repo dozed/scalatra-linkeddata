@@ -29,19 +29,19 @@ $ ./sbt
 The client can choose the format for the triples via content negotiation:
 
 ```sh
-curl --header "Accept: text/turtle" http://localhost:8080/Germany
-curl --header "Accept: application/rdf+xml" http://localhost:8080/Germany
-curl --header "Accept: application/rdf+json" http://localhost:8080/Germany
-curl --header "Accept: application/ld+json" http://localhost:8080/Germany
+curl --header "Accept: text/turtle" http://localhost:8080/country/Germany
+curl --header "Accept: application/rdf+xml" http://localhost:8080/country/Germany
+curl --header "Accept: application/rdf+json" http://localhost:8080/country/Germany
+curl --header "Accept: application/ld+json" http://localhost:8080/country/Germany
 ```
 
 Or via a format query parameter:
 
 ```sh
-curl http://localhost:8080/Germany\?format\=turtle
-curl http://localhost:8080/Germany\?format\=rdfxml
-curl http://localhost:8080/Germany\?format\=rdf%2Bjson
-curl http://localhost:8080/Germany\?format\=ld%2Bjson
+curl http://localhost:8080/country/Germany\?format\=turtle
+curl http://localhost:8080/country/Germany\?format\=rdfxml
+curl http://localhost:8080/country/Germany\?format\=rdf%2Bjson
+curl http://localhost:8080/country/Germany\?format\=ld%2Bjson
 ```
 
 Instead of `Germany` you can try other countries as well, see `fao-geo-ont.xml` for more information ;)
