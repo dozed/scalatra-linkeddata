@@ -53,15 +53,14 @@ There are currently two useful functions for queries. The `sparqlQueryString` fu
 ```scala
 post("/sparql", format == "sparql-query") {
   val queryString = sparqlQueryString
-  // val queryString = """SELECT ?x ?p ?y WHERE { ?x  <http://www.w3.org/2001/vcard-rdf/3.0#FN>  "John Smith"; ?p ?y }"""
   println(queryString)
 
   val querySolutions: List[QuerySolution] = doSparqlQuery
   querySolutions foreach { soln =>
     println(soln)
-    // RDFNode x = soln.get("varName")
-    // Resource r = soln.getResource("VarR")
-    // Literal l = soln.getLiteral("VarL")
+    // val x = soln.get("varName")
+    // val r = soln.getResource("VarR")
+    // val l = soln.getLiteral("VarL")
   }
 }
 ```
