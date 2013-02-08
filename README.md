@@ -109,7 +109,15 @@ curl -d """
 A query using a `GET` request is possible. The SPARQL query should be written to the `query` parameter.
 
 ```sh
-curl http://localhost:8080/sparql?query=SELECT%20%3Fx%20%3Fp%20%3Fy%0A%20%20WHERE%20%7B%0A%20%20%20%20%3Fx%20%3Chttp%3A%2F%2Fwww.fao.org%2Fcountryprofiles%2Fgeoinfo%2Fgeopolitical%2Fresource%2FcodeISO2%3E%20%20%5C%22DE%5C%22%3B%0A%20%20%20%20%20%20%20%3Fp%20%3Fy%0A%7D
+curl http://localhost:8080/sparql\?query\=SELECT%20%3Fx%20%3Fp%20%3Fy%0A%20%20WHERE%20%7B%0A%20%20%20%20%3Fx%20%3Chttp%3A%2F%2Fwww.fao.org%2Fcountryprofiles%2Fgeoinfo%2Fgeopolitical%2Fresource%2FcodeISO2%3E%20%20%22DE%22%3B%0A%20%20%20%20%20%20%20%3Fp%20%3Fy%0A%7D
+```
+
+```sh
+curl -H "Accept: application/ld+json" http://localhost:8080/sparql\?query\=DESCRIBE%20%3Chttp%3A%2F%2Fwww.fao.org%2Fcountryprofiles%2Fgeoinfo%2Fgeopolitical%2Fresource%2FGermany%3E
+```
+
+```sh
+curl http://localhost:8080/sparql\?query\=ASK%20WHERE%20%7B%0A%20%20%20%20%3Fx%20%3Chttp%3A%2F%2Fwww.fao.org%2Fcountryprofiles%2Fgeoinfo%2Fgeopolitical%2Fresource%2FcodeISO2%3E%20%20%22DE%22%3B%0A%20%20%20%20%20%20%20%3Fp%20%3Fy%0A%7D
 ```
 
 
