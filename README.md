@@ -92,7 +92,7 @@ curl -d """
 
 ```sh
 curl -v -d """
-  DESCRIBE <http://www.fao.org/countryprofiles/geoinfo/geopolitical/resource/Germany>""" -H "Content-type: application/sparql-query" http://localhost:8080/sparql
+  DESCRIBE <http://www.fao.org/countryprofiles/geoinfo/geopolitical/resource/Germany>""" -H "Content-type: application/sparql-query" http://localhost:8080/sparql\?format\=ld%2Bjson
 ```
 
 ```sh
