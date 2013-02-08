@@ -14,6 +14,13 @@ object LinkedDataSupport {
   val SparqlQueryKey = "org.scalatra.linkeddata.SparqlQuery"
 }
 
+sealed trait QueryResult
+case class SelectResult(solutions: List[QuerySolution]) extends QueryResult
+case class DescribeResult(model: Model) extends QueryResult
+case class ConstructResult(model: Model) extends QueryResult
+case class AskResult(result: Boolean) extends QueryResult
+object NullResult extends QueryResult
+
 trait LinkedDataSupport extends ApiFormats {
   self: ScalatraServlet =>
 
@@ -48,7 +55,7 @@ trait LinkedDataSupport extends ApiFormats {
     }
   }
 
-  private def shouldParseSparqlQuery = (format == "sparql-query")
+  private def shouldParseSparqlQuery = (requestContentType == "sparql-query")
 
   def sparqlQueryString(implicit request: HttpServletRequest): String = request.get(SparqlQueryKey).map(_.asInstanceOf[String]) getOrElse {
     var bd: String = ""
@@ -63,23 +70,46 @@ trait LinkedDataSupport extends ApiFormats {
     request.body
   }
 
-  def sparqlQuery(q: String): List[QuerySolution] = {
+  def sparqlQuery(q: String): QueryResult = {
     request(SparqlQueryKey) = q
     sparqlQuery
   }
 
-  def sparqlQuery: List[QuerySolution] = {
+  def sparqlQuery: QueryResult = {
     val query = QueryFactory.create(sparqlQueryString)
     val qexec = QueryExecutionFactory.create(query, model)
-    var solutions = List[QuerySolution]()
-    try {
-      val results = qexec.execSelect
-      solutions = results.toList
-    } finally { qexec.close }
-    solutions
+
+    if (query.isSelectType) {
+      var solutions = List[QuerySolution]()
+      try {
+        val results = qexec.execSelect
+        solutions = results.toList
+      } finally { qexec.close }
+      SelectResult(solutions)
+    } else if (query.isDescribeType) {
+      DescribeResult(qexec.execDescribe)
+    } else if (query.isConstructType) {
+      ConstructResult(qexec.execConstruct)
+    } else if (query.isAskType) {
+      AskResult(qexec.execAsk)
+    } else {
+      NullResult
+    }
   }
 
-  private def solutionsXml(l: List[QuerySolution]) = {
+  def requestContentType = {
+    request.contentType flatMap (ct => formatForMimeTypes(ct)) getOrElse format
+  }
+
+  override def renderPipeline = ({
+    case stmts: StmtIterator => writeStatements(stmts)
+    case SelectResult(solutions) => writeQuerySolutions(solutions)
+    case DescribeResult(model) => writeStatements(model.listStatements)
+    case ConstructResult(model) => writeStatements(model.listStatements)
+    case AskResult(result) => result
+  }:RenderPipeline) orElse super.renderPipeline
+
+  private def writeQuerySolutions(l: List[QuerySolution]) = {
     def valueXml(v: RDFNode) = v match {
       case b:Resource if b.isAnon => <bnode>{b.getURI}</bnode>
       case r:Resource => <uri>{r.getURI}</uri>
@@ -94,6 +124,8 @@ trait LinkedDataSupport extends ApiFormats {
       </result>
     }
 
+    contentType = "application/xml"
+
     <sparql xmlns="http://www.w3.org/2005/sparql-results#">
       <head>
         { l.flatMap(_.varNames).toSet map { vn: String => <variable name={vn} /> } }
@@ -104,28 +136,20 @@ trait LinkedDataSupport extends ApiFormats {
     </sparql>
   }
 
-  override def renderPipeline = ({
-    case stmts: StmtIterator =>
+  private def writeStatements(stmts: StmtIterator) {
+    if (format == "ld+json") {
+      writeJsonLd(stmts)
+    } else {
+      val (wf, ct) = jenaWriterFormats.getOrElse(format, ("RDF/XML", "application/rdf+xml"))
+      contentType = ct
 
-      if (format == "ld+json") {
-        writeJsonLd(stmts)
-      } else {
-        val (wf, ct) = jenaWriterFormats.getOrElse(format, ("RDF/XML", "application/rdf+xml"))
-        contentType = ct
+      val m = ModelFactory.createDefaultModel
+      m.add(stmts)
+      m.write(response.getOutputStream, wf)
+    }
+  }
 
-        val m = ModelFactory.createDefaultModel
-        m.add(stmts)
-        m.write(response.getOutputStream, wf)
-      }
-
-    case solutions: List[QuerySolution] =>
-      // contentType = "application/sparql-results+xml"
-      contentType = "application/xml"
-      solutionsXml(solutions)
-
-  }:RenderPipeline) orElse super.renderPipeline
-
-  def writeJsonLd(stmts: StmtIterator) {
+  private def writeJsonLd(stmts: StmtIterator) {
     // contentType = "application/ld+json"
     contentType = "application/json"
     val w = response.getWriter

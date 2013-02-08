@@ -27,14 +27,8 @@ class ScalatraLinkedData extends ScalatraServlet with ScalateSupport with Linked
     stmts
   }
 
-  post("/sparql", format == "sparql-query") {
-    val querySolutions: List[QuerySolution] = sparqlQuery
-    querySolutions foreach { soln =>
-      // val x = soln.get("varName")
-      // val r = soln.getResource("VarR")
-      // val l = soln.getLiteral("VarL")
-    }
-
+  post("/sparql", requestContentType == "sparql-query") {
+    val querySolutions: QueryResult = sparqlQuery
     querySolutions
   }
 

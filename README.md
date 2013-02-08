@@ -11,6 +11,7 @@ This projects adds support for various linkeddata technologies to your Scalatra 
   * Support for [SPARQL 1.1 Protocol](http://www.w3.org/TR/sparql11-protocol/)
     * handle [`application/sparql-query`](http://www.w3.org/TR/sparql11-protocol/) requests
     * render query results as [`application/sparql-results+xml`](http://www.w3.org/TR/rdf-sparql-XMLres/)
+    * supports SELECT, DESCRIBE, CONSTRUCT and ASK queries
 
 [Apache Jena](http://jena.apache.org/) is used under the hood.
 
@@ -47,10 +48,18 @@ Instead of `Germany` you can try other countries as well, see `fao-geo-ont.xml` 
 
 ## SPARQL Queries
 
-An incoming request with content type `application/sparql-query` makes the request body accessible via the `sparqlQueryString` function. The `format` will be set to `sparql-query`. The query can be executed with the `sparqlQuery` function.
+An incoming request with content type `application/sparql-query` makes the request body accessible via the `sparqlQueryString` function. The `format` will be set to `sparql-query`.
+
+A query can be executed with the `sparqlQuery` function. The return type depends on the type of the query:
+
+  * SELECT query: returns a `SelectResult(solutions: List[QuerySolution])`
+  * CONSTRUCT query: returns a `ConstructResult(model: Model)`
+  * DESCRIBE query: returns a `DescribeResult(model: Model)`
+  * ASK query: returns a `AskResult(result: Boolean)`
 
 When returning a [`List[QuerySolution]`](http://jena.apache.org/documentation/javadoc/arq/com/hp/hpl/jena/query/QuerySolution.html) from an action the results will be rendered as `application/sparql-results+xml`.
 
+A `Model` will be rendered by displaying all triples it contains. The client can choose the response format (see above).
 
 #### Direct POST query
 
@@ -81,6 +90,19 @@ curl -d """
 }""" -H "Content-type: application/sparql-query" http://localhost:8080/sparql
 ```
 
+```sh
+curl -v -d """
+  DESCRIBE <http://www.fao.org/countryprofiles/geoinfo/geopolitical/resource/Germany>""" -H "Content-type: application/sparql-query" http://localhost:8080/sparql
+```
+
+```sh
+curl -d """
+  ASK
+  WHERE {
+    ?x <http://www.fao.org/countryprofiles/geoinfo/geopolitical/resource/codeISO2>  \"DE\";
+       ?p ?y
+}""" -H "Content-type: application/sparql-query" http://localhost:8080/sparql
+```
 
 #### GET query
 
@@ -89,3 +111,5 @@ A query using a `GET` request is possible. The SPARQL query should be written to
 ```sh
 curl http://localhost:8080/sparql?query=SELECT%20%3Fx%20%3Fp%20%3Fy%0A%20%20WHERE%20%7B%0A%20%20%20%20%3Fx%20%3Chttp%3A%2F%2Fwww.fao.org%2Fcountryprofiles%2Fgeoinfo%2Fgeopolitical%2Fresource%2FcodeISO2%3E%20%20%5C%22DE%5C%22%3B%0A%20%20%20%20%20%20%20%3Fp%20%3Fy%0A%7D
 ```
+
+
