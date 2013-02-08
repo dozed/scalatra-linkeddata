@@ -63,15 +63,45 @@ trait LinkedDataSupport extends ApiFormats {
     request.body
   }
 
-  def doSparqlQuery: List[QuerySolution] = {
+  def sparqlQuery(q: String): List[QuerySolution] = {
+    request(SparqlQueryKey) = q
+    sparqlQuery
+  }
+
+  def sparqlQuery: List[QuerySolution] = {
     val query = QueryFactory.create(sparqlQueryString)
     val qexec = QueryExecutionFactory.create(query, model)
     var solutions = List[QuerySolution]()
     try {
       val results = qexec.execSelect
       solutions = results.toList
-    } finally { qexec.close() ; }
+    } finally { qexec.close }
     solutions
+  }
+
+  private def solutionsXml(l: List[QuerySolution]) = {
+    def valueXml(v: RDFNode) = v match {
+      case b:Resource if b.isAnon => <bnode>{b.getURI}</bnode>
+      case r:Resource => <uri>{r.getURI}</uri>
+      case l:Literal if !l.getLanguage.isEmpty => <literal xml:lang={l.getLanguage}>{l.getValue}</literal>
+      case l:Literal if l.getDatatypeURI != null => <literal datatype={l.getDatatypeURI}>{l.getValue}</literal>
+      case l:Literal => <literal>{l.getValue}</literal>
+    }
+
+    def solutionXml(s: QuerySolution) = {
+      <result>
+      { s.varNames.map(vn => <binding name={vn}>{valueXml(s.get(vn))}</binding>) }
+      </result>
+    }
+
+    <sparql xmlns="http://www.w3.org/2005/sparql-results#">
+      <head>
+        { l.flatMap(_.varNames).toSet map { vn: String => <variable name={vn} /> } }
+      </head>
+      <results>
+        { l map solutionXml }
+      </results>
+    </sparql>
   }
 
   override def renderPipeline = ({
@@ -87,6 +117,12 @@ trait LinkedDataSupport extends ApiFormats {
         m.add(stmts)
         m.write(response.getOutputStream, wf)
       }
+
+    case solutions: List[QuerySolution] =>
+      // contentType = "application/sparql-results+xml"
+      contentType = "application/xml"
+      solutionsXml(solutions)
+
   }:RenderPipeline) orElse super.renderPipeline
 
   def writeJsonLd(stmts: StmtIterator) {
