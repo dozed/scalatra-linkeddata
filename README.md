@@ -67,46 +67,44 @@ This action handles `POST` queries with content type set to `application/sparql-
 
 ```scala
 post("/sparql", format == "sparql-query") {
-  // read the query
-  val queryString: String = sparqlQueryString
-
-  // execute the query
-  val querySolutions: List[QuerySolution] = sparqlQuery
-
-  // do stuff
-  querySolutions foreach { soln => println(soln) }
-
-  // or just return the results
-  querySolutions
+  val queryResult: QueryResult = sparqlQuery
+  queryResult
 }
 ```
 
 ```sh
-curl -d """
+curl -H "Content-type: application/sparql-query" -d """
   SELECT ?x ?p ?y
   WHERE {
     ?x <http://www.fao.org/countryprofiles/geoinfo/geopolitical/resource/codeISO2>  \"DE\";
        ?p ?y
-}""" -H "Content-type: application/sparql-query" http://localhost:8080/sparql
+}""" http://localhost:8080/sparql
 ```
 
 ```sh
-curl -v -d """
-  DESCRIBE <http://www.fao.org/countryprofiles/geoinfo/geopolitical/resource/Germany>""" -H "Content-type: application/sparql-query" http://localhost:8080/sparql\?format\=ld%2Bjson
+curl -H "Content-type: application/sparql-query" -d """
+  DESCRIBE <http://www.fao.org/countryprofiles/geoinfo/geopolitical/resource/Germany>"""  http://localhost:8080/sparql\?format\=ld%2Bjson
 ```
 
 ```sh
-curl -d """
+curl -H "Content-type: application/sparql-query" -d """
   ASK
   WHERE {
     ?x <http://www.fao.org/countryprofiles/geoinfo/geopolitical/resource/codeISO2>  \"DE\";
        ?p ?y
-}""" -H "Content-type: application/sparql-query" http://localhost:8080/sparql
+}""" http://localhost:8080/sparql
 ```
 
 #### GET query
 
 A query using a `GET` request is possible. The SPARQL query should be written to the `query` parameter.
+
+```scala
+get("/sparql", params.contains("query")) {
+  val queryString: String = params("query")
+  sparqlQuery(queryString)
+}
+```
 
 ```sh
 curl http://localhost:8080/sparql\?query\=SELECT%20%3Fx%20%3Fp%20%3Fy%0A%20%20WHERE%20%7B%0A%20%20%20%20%3Fx%20%3Chttp%3A%2F%2Fwww.fao.org%2Fcountryprofiles%2Fgeoinfo%2Fgeopolitical%2Fresource%2FcodeISO2%3E%20%20%22DE%22%3B%0A%20%20%20%20%20%20%20%3Fp%20%3Fy%0A%7D
