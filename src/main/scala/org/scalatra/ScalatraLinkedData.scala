@@ -32,9 +32,30 @@ class ScalatraLinkedData extends ScalatraServlet with ScalateSupport with Linked
     querySolutions
   }
 
+  get("/sparql", !params.contains("query")) {
+    jade("sparql")
+  }
+
   get("/sparql", params.contains("query")) {
     val queryString: String = params("query")
-    sparqlQuery(queryString)
+    val result = sparqlQuery(queryString)
+
+    if (format == "html") {
+      renderAsHtml(result, queryString)
+    } else {
+      result
+    }
+  }
+
+  private def renderAsHtml(result: QueryResult, queryString: String) = result match {
+    case SelectResult(results) =>
+      jade("sparql-results",
+        "results" -> results,
+        "query" -> queryString)
+    case DescribeResult(model) => result
+    case ConstructResult(model) => result
+    case AskResult(result) => result
+    case NullResult => 
   }
 
   notFound {

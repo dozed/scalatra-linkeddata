@@ -1,0 +1,12 @@
+-@ val title: String = ""
+-@ val headline: String = title
+-@ val body: String
+
+!!!
+html
+  head
+    title= title
+    link(rel="stylesheet" type="text/css" href="css/bootstrap.min.css")
+  body
+    .container-fluid
+      != body

@@ -24,6 +24,10 @@ $ ./sbt
 > browse
 ```
 
+Screenshot:
+
+<img src="sparql.png" />
+
 ## Setting the format
 
 The client can choose the format for the triples via content negotiation:

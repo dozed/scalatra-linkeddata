@@ -1,0 +1,27 @@
+
+-@ val results: List[com.hp.hpl.jena.query.QuerySolution]
+-@ val query: String
+
+form
+  .row
+    .span1
+      span Query
+  .row
+    .span6
+      textarea(name="query" style="width: 100%; height: 125px")= query
+  .row
+    .span1
+      input.btn(type="submit" value="Send")
+
+.row-fluid
+  .span12
+    -val varNames = results.flatMap(_.varNames).toSet
+    table.table
+      tr
+        -for (varName <- varNames)
+          th= varName
+
+      -for (res <- results)
+        tr
+          -for (vn <- varNames)
+            td= res.get(vn)
