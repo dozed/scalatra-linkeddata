@@ -3,13 +3,15 @@
 -@ val query: String
 
 form
-  .row
+  .row-fluid
     .span1
       span Query
-  .row
-    .span6
-      textarea(name="query" style="width: 100%; height: 125px")= query
-  .row
+  .row-fluid
+    .span10
+      textarea(name="query" style="width: 100%; height: 125px")><
+        ~~ query
+
+  .row-fluid
     .span1
       input.btn(type="submit" value="Send")
 
