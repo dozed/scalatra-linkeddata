@@ -124,8 +124,8 @@ trait LinkedDataSupport extends ApiFormats with JacksonJsonSupport {
     case "sparql-results+json" =>
       // contentType = "application/sparql-results+json"
       contentType = "application/json"
-      querySolutionsToJArray(l)
-      
+      querySolutionsToJValue(l)
+
     case _ =>
       // contentType = "application/sparql-results+xml"
       contentType = "application/xml"
@@ -157,7 +157,7 @@ trait LinkedDataSupport extends ApiFormats with JacksonJsonSupport {
     </sparql>
   }
 
-  private def querySolutionsToJArray(l: List[QuerySolution]): JArray = {
+  private def querySolutionsToJValue(l: List[QuerySolution]): JValue = {
     def asJValue(o: Any): JValue = o match {
       case s: String => JString(s)
       case i: Int => JInt(i)
