@@ -121,12 +121,18 @@ trait LinkedDataSupport extends ApiFormats with JacksonJsonSupport {
   }:RenderPipeline) orElse super.renderPipeline
 
   private def writeQuerySolutions(l: List[QuerySolution]) = format match {
-    case "sparql-results+json" => writeQuerySolutionsAsJValue(l)
-    case "sparql-results+xml" => writeQuerySolutionsAsXml(l)
-    case _ => writeQuerySolutionsAsXml(l)
+    case "sparql-results+json" =>
+      // contentType = "application/sparql-results+json"
+      contentType = "application/json"
+      querySolutionsToJArray(l)
+      
+    case _ =>
+      // contentType = "application/sparql-results+xml"
+      contentType = "application/xml"
+      querySolutionsToXml(l)
   }
 
-  private def writeQuerySolutionsAsXml(l: List[QuerySolution]) = {
+  private def querySolutionsToXml(l: List[QuerySolution]) = {
     def valueXml(v: RDFNode) = v match {
       case b:Resource if b.isAnon => <bnode>{b.getURI}</bnode>
       case r:Resource => <uri>{r.getURI}</uri>
@@ -141,9 +147,6 @@ trait LinkedDataSupport extends ApiFormats with JacksonJsonSupport {
       </result>
     }
 
-    // contentType = "application/sparql-results+xml"
-    contentType = "application/xml"
-
     <sparql xmlns="http://www.w3.org/2005/sparql-results#">
       <head>
         { l.flatMap(_.varNames).toSet map { vn: String => <variable name={vn} /> } }
@@ -154,7 +157,7 @@ trait LinkedDataSupport extends ApiFormats with JacksonJsonSupport {
     </sparql>
   }
 
-  private def writeQuerySolutionsAsJValue(l: List[QuerySolution]): JValue = {
+  private def querySolutionsToJArray(l: List[QuerySolution]): JArray = {
     def asJValue(o: Any): JValue = o match {
       case s: String => JString(s)
       case i: Int => JInt(i)
@@ -197,9 +200,6 @@ trait LinkedDataSupport extends ApiFormats with JacksonJsonSupport {
       val vars = s.varNames.toList
       JArray(vars map { vn => JObject(vn -> bindingValue(s.get(vn))) })
     }
-
-    // contentType = "application/sparql-results+json"
-    contentType = "application/json"
 
     val varNames = l.flatMap(_.varNames).toSet.toList map JString.apply
 
