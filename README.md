@@ -10,8 +10,8 @@ This projects adds support for various linkeddata technologies to your Scalatra 
 
   * Support for [SPARQL 1.1 Protocol](http://www.w3.org/TR/sparql11-protocol/)
     * handle [`application/sparql-query`](http://www.w3.org/TR/sparql11-protocol/) requests
-    * render query results as [`application/sparql-results+xml`](http://www.w3.org/TR/rdf-sparql-XMLres/)
-    * supports SELECT, DESCRIBE, CONSTRUCT and ASK queries
+    * render query results as [`application/sparql-results+xml`](http://www.w3.org/TR/rdf-sparql-XMLres/), [`application/sparql-results+json](http://www.w3.org/TR/rdf-sparql-json-res/) or as `text/html`
+    * supports SELECT, DESCRIBE, CONSTRUCT and ASK [queries](http://www.w3.org/TR/rdf-sparql-query/)
 
 [Apache Jena](http://jena.apache.org/) is used under the hood.
 
@@ -107,7 +107,11 @@ get("/sparql", params.contains("query")) {
 ```
 
 ```sh
-curl http://localhost:8080/sparql\?query\=SELECT%20%3Fx%20%3Fp%20%3Fy%0A%20%20WHERE%20%7B%0A%20%20%20%20%3Fx%20%3Chttp%3A%2F%2Fwww.fao.org%2Fcountryprofiles%2Fgeoinfo%2Fgeopolitical%2Fresource%2FcodeISO2%3E%20%20%22DE%22%3B%0A%20%20%20%20%20%20%20%3Fp%20%3Fy%0A%7D
+curl -H "Accept: application/sparql-results+xml" http://localhost:8080/sparql\?query\=SELECT%20%3Fx%20%3Fp%20%3Fy%0A%20%20WHERE%20%7B%0A%20%20%20%20%3Fx%20%3Chttp%3A%2F%2Fwww.fao.org%2Fcountryprofiles%2Fgeoinfo%2Fgeopolitical%2Fresource%2FcodeISO2%3E%20%20%22DE%22%3B%0A%20%20%20%20%20%20%20%3Fp%20%3Fy%0A%7D
+```
+
+```sh
+curl -H "Accept: application/sparql-results+json" http://localhost:8080/sparql\?query\=SELECT%20%3Fx%20%3Fp%20%3Fy%0A%20%20WHERE%20%7B%0A%20%20%20%20%3Fx%20%3Chttp%3A%2F%2Fwww.fao.org%2Fcountryprofiles%2Fgeoinfo%2Fgeopolitical%2Fresource%2FcodeISO2%3E%20%20%22DE%22%3B%0A%20%20%20%20%20%20%20%3Fp%20%3Fy%0A%7D
 ```
 
 ```sh
