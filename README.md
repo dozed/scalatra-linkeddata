@@ -10,7 +10,7 @@ This projects adds support for various linkeddata technologies to your Scalatra 
 
   * Support for [SPARQL 1.1 Protocol](http://www.w3.org/TR/sparql11-protocol/)
     * handle [`application/sparql-query`](http://www.w3.org/TR/sparql11-protocol/) requests
-    * render query results as [`application/sparql-results+xml`](http://www.w3.org/TR/rdf-sparql-XMLres/), [`application/sparql-results+json](http://www.w3.org/TR/rdf-sparql-json-res/) or as `text/html`
+    * render query results as [`application/sparql-results+xml`](http://www.w3.org/TR/rdf-sparql-XMLres/), [`application/sparql-results+json`](http://www.w3.org/TR/rdf-sparql-json-res/) or as `text/html`
     * supports SELECT, DESCRIBE, CONSTRUCT and ASK [queries](http://www.w3.org/TR/rdf-sparql-query/)
 
 [Apache Jena](http://jena.apache.org/) is used under the hood.
