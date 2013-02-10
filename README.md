@@ -127,3 +127,60 @@ curl http://localhost:8080/sparql\?query\=ASK%20WHERE%20%7B%0A%20%20%20%20%3Fx%2
 ```
 
 
+#### Some useful queries
+
+Members of the EU:
+
+```sql
+PREFIX geo: <http://www.fao.org/countryprofiles/geoinfo/geopolitical/resource/> 
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+SELECT ?name ?type
+WHERE {
+  geo:EU geo:hasMember ?y.
+  ?y geo:nameOfficial ?name;
+    a ?type.
+  FILTER ( lang(?name) = "en" )
+} 
+```
+
+owl:sameAs links originating from self_governing resources:
+
+```sql
+PREFIX geo: <http://www.fao.org/countryprofiles/geoinfo/geopolitical/resource/> 
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+SELECT ?x ?y
+WHERE {
+  ?x owl:sameAs ?y.
+  ?x a geo:self_governing
+}
+```
+
+Currencies used in the geopolitical ontology:
+
+```sql
+PREFIX geo: <http://www.fao.org/countryprofiles/geoinfo/geopolitical/resource/> 
+SELECT DISTINCT ?curr
+WHERE { ?x geo:nameCurrency ?curr }
+```
+
+All classes:
+
+```sql
+PREFIX geo: <http://www.fao.org/countryprofiles/geoinfo/geopolitical/resource/> 
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+SELECT ?x ?y
+WHERE {
+  ?x a owl:Class
+}
+```
+
+Resources which have a border with Germany:
+
+```sql
+PREFIX geo: <http://www.fao.org/countryprofiles/geoinfo/geopolitical/resource/> 
+SELECT ?x
+WHERE {
+  ?x geo:hasBorderWith geo:Germany
+}
+```
+

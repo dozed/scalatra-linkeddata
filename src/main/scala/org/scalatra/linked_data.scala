@@ -32,7 +32,9 @@ trait LinkedDataSupport extends ApiFormats with JacksonJsonSupport {
 
   import LinkedDataSupport._
 
-  def model: Model
+  def defaultModel: Model
+
+  def model(key: String): Option[Model] = None
 
   org.openjena.riot.RIOT.init()
 
@@ -88,7 +90,7 @@ trait LinkedDataSupport extends ApiFormats with JacksonJsonSupport {
 
   def sparqlQuery: QueryResult = {
     val query = QueryFactory.create(sparqlQueryString)
-    val qexec = QueryExecutionFactory.create(query, model)
+    val qexec = QueryExecutionFactory.create(query, defaultModel)
 
     if (query.isSelectType) {
       var solutions = List[QuerySolution]()

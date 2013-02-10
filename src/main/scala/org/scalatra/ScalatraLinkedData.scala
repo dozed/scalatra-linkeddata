@@ -20,6 +20,9 @@ class ScalatraLinkedData extends ScalatraServlet with ScalateSupport with Linked
   val rdfType = model.getProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")
   val selfGoverning = model.getResource(faoUrl("self_governing"))
 
+  val defaultModel: Model = model
+  override def model(key: String): Option[Model] = None
+
   get("/country/:id") {
     val url = faoUrl(params("id"))
     val res = model.getResource(url)
