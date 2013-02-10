@@ -176,7 +176,7 @@ WHERE {
 
 Resources which have a border with Germany:
 
-```sql
+```sparql
 PREFIX geo: <http://www.fao.org/countryprofiles/geoinfo/geopolitical/resource/> 
 SELECT ?x
 WHERE {
